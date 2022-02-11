@@ -14,7 +14,6 @@ class MainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         setupTapBar()
         setupItems()
         
