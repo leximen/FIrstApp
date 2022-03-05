@@ -30,9 +30,8 @@ class MainTabBarController: UITabBarController {
         let mainVC = MainViewController()
         let profileVC = ProfileViewController()
         let statisticVC = StatisticViewController()
-        let starWorkoutVC = StartWorkoutViewController()
         
-        setViewControllers([mainVC,profileVC,statisticVC,starWorkoutVC], animated: true)
+        setViewControllers([mainVC,profileVC,statisticVC], animated: true)
         
         guard  let items = tabBar.items else { return }
         

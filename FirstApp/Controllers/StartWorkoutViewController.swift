@@ -35,7 +35,7 @@ class StartWorkoutViewController: UIViewController {
         return imageView
     }()
     
-    private let detailLabel: UILabel = {
+    private let detailsLabel: UILabel = {
     let label = UILabel()
      label.text = "Detail"
      label.font = .robotoMedium14()
@@ -44,7 +44,19 @@ class StartWorkoutViewController: UIViewController {
      return label
  }()
     
-    private let datailView = DatailView()
+    private let datailsView = DetailView()
+    
+    private let finishButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.backgroundColor = .specialGreen
+        button.setTitle("FINISH", for: .normal)
+        button.titleLabel?.font = .robotoBold16()
+        button.tintColor = .white
+        button.layer.cornerRadius = 10
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(finishButtonTapped), for: .touchUpInside)
+        return button
+    }()
 
     override func viewDidLayoutSubviews() {
         closeButton.layer.cornerRadius = closeButton.frame.height / 2
@@ -62,19 +74,23 @@ class StartWorkoutViewController: UIViewController {
     private func setupView() {
 
         view.backgroundColor = .specialBackground
-
         view.addSubview(startWorkoutLabel)
         view.addSubview(closeButton)
         view.addSubview(startWorkoutImageView)
-        view.addSubview(detailLabel)
-        view.addSubview(datailView)
+        view.addSubview(detailsLabel)
+        view.addSubview(datailsView)
+        view.addSubview(finishButton)
 
     
     }
     @objc func closeButtonTapped() {
         dismiss(animated: true, completion: nil)            //закрывает по нажатию кнопки и выгружает из памяти
     }
-
+    
+    @objc func finishButtonTapped() {
+//        dismiss(animated: true, completion: nil)
+    }
+    
         private func setConstraints() {
             
             NSLayoutConstraint.activate([
@@ -96,19 +112,24 @@ class StartWorkoutViewController: UIViewController {
             ])
             
             NSLayoutConstraint.activate([
-                detailLabel.topAnchor.constraint(equalTo: startWorkoutImageView.bottomAnchor, constant: 15),
-                detailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-                detailLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+                detailsLabel.topAnchor.constraint(equalTo: startWorkoutImageView.bottomAnchor, constant: 15),
+                detailsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
+                detailsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            ])
+        
+            NSLayoutConstraint.activate([
+                datailsView.topAnchor.constraint(equalTo: detailsLabel.bottomAnchor, constant: 3),
+                datailsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+                datailsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+                datailsView.heightAnchor.constraint(equalToConstant: 230)                              //(equalTo: view.widthAnchor, multiplier: 0.2)
             ])
             
-        
-//            NSLayoutConstraint.activate([
-//                datailView.topAnchor.constraint(equalTo: detailLabel.bottomAnchor, constant: 3),
-//                datailView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-//                datailView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-//                datailView.heightAnchor.constraint(equalToConstant: 95)                              //(equalTo: view.widthAnchor, multiplier: 0.2)
-//            ])
-            
+            NSLayoutConstraint.activate([
+            finishButton.topAnchor.constraint(equalTo: datailsView.bottomAnchor, constant: 20),
+            finishButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            finishButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            finishButton.heightAnchor.constraint(equalToConstant: 55)
+        ])
             
         }
     }

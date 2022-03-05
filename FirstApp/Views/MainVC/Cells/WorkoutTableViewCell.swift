@@ -48,7 +48,7 @@ class WorkoutTableViewCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    private let workoutSetLabel: UILabel = {
+    private let workoutSetsLabel: UILabel = {
         let label = UILabel()
         label.text = "Set: 2"
         label.font = .robotoMedium16()
@@ -65,7 +65,7 @@ class WorkoutTableViewCell: UITableViewCell {
         button.titleLabel?.font = .robotoMedium16()
         button.tintColor = .specialDarkGreen
         button.translatesAutoresizingMaskIntoConstraints = false
-//        button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -91,17 +91,29 @@ class WorkoutTableViewCell: UITableViewCell {
         addSubview(logo)
         addSubview(workoutNameLabel)
         
-        labelsStackView = UIStackView(arrangedSubviews: [workoutRepsLabel, workoutSetLabel],
+        labelsStackView = UIStackView(arrangedSubviews: [workoutRepsLabel, workoutSetsLabel],
                                       axis: .horizontal,
                                       spacing: 10)                  //это растояние между (workoutRepsLabel и workoutSetLabel) по горизонтали
         addSubview(labelsStackView)
-        
         contentView.addSubview(startButton)
         
-//        @objc private func startButtonTapped() {
-//            print("startButtonTapped")
-//        }
-  
+    }
+        @objc private func startButtonTapped() {
+            print("startButtonTapped")
+        }
+    
+    func cellConfigure(model: WorkoutModel) {
+        workoutNameLabel.text = model.workoutName
+ 
+        let (min, sec) = { (secs: Int) -> (Int, Int) in
+            return (secs / 60, secs % 60)}(model.workoutTimer)
+
+        workoutRepsLabel.text = (model.workoutTimer == 0 ? "Reps: \(model.workoutReps)" : "Timer: \(min) min \(sec) sec")
+        workoutSetsLabel.text = "Sets: \(model.workoutSets)"
+
+        guard let imageData = model.workoutImage else { return }
+        guard let image = UIImage(data: imageData) else { return }
+        logo.image = image
     }
     
     private func setConstraints() {

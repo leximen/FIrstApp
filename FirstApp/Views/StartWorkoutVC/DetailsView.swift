@@ -74,19 +74,20 @@ class DetailView: UIView {
         button.tintColor = .specialLightBrown
         button.titleLabel?.font = .robotoMedium16()
         button.translatesAutoresizingMaskIntoConstraints = false
-        //        button.addTarget(self, action: #selector(editingButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(editingButtonTapped), for: .touchUpInside)
         return button
     }()
     
     let nextSetsButton: UIButton = {
         let button = UIButton(type: .system)
         button.setBackgroundImage(UIImage(named: "NEXT SET"), for: .normal)
+        button.setTitle("NEXT SET", for: .normal)
         button.tintColor = .specialGray
         button.titleLabel?.font = .robotoBold16()
         button.backgroundColor = .specialYellow
         button.layer.cornerRadius = 10
         button.translatesAutoresizingMaskIntoConstraints = false
-        //        button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(nextSetsButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -123,7 +124,6 @@ class DetailView: UIView {
                                      axis: .horizontal,
                                      spacing: 10)
         
-//        repsStackView.distribution = .equalSpacing
         addSubview(repsStackView)
         addSubview(repsLineView)
         
@@ -131,6 +131,16 @@ class DetailView: UIView {
         addSubview(nextSetsButton)
         
     }
+ //FIXME: -     editingButtonTapped,      nextSetsButtonTapped
+    @objc func editingButtonTapped() {
+//        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func nextSetsButtonTapped() {
+//        dismiss(animated: true, completion: nil)
+    }
+    
+    
     private func setConstraints() {
         
         NSLayoutConstraint.activate([
@@ -141,7 +151,7 @@ class DetailView: UIView {
         ])
         
         NSLayoutConstraint.activate([
-            setsStackView.topAnchor.constraint(equalTo: workoutNameLabel.bottomAnchor, constant: 10),
+            setsStackView.topAnchor.constraint(equalTo: workoutNameLabel.bottomAnchor, constant: 5),
             setsStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             setsStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             setsStackView.heightAnchor.constraint(equalToConstant: 25)
@@ -153,6 +163,34 @@ class DetailView: UIView {
             setsLineView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             setsLineView.heightAnchor.constraint(equalToConstant: 1)
         ])
+        
+        NSLayoutConstraint.activate([
+            repsStackView.topAnchor.constraint(equalTo: setsLineView.bottomAnchor, constant: 15),
+            repsStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            repsStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+        ])
+        
+        NSLayoutConstraint.activate([
+            repsLineView.topAnchor.constraint(equalTo: repsStackView.bottomAnchor, constant: 3),
+            repsLineView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            repsLineView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            repsLineView.heightAnchor.constraint(equalToConstant: 1)
+        ])
+        
+        NSLayoutConstraint.activate([
+            editingButton.topAnchor.constraint(equalTo: repsLineView.bottomAnchor, constant: 15),
+            editingButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            editingButton.heightAnchor.constraint(equalToConstant: 20),
+            editingButton.widthAnchor.constraint(equalToConstant: 80)
+        ])
+        
+        NSLayoutConstraint.activate([
+            nextSetsButton.topAnchor.constraint(equalTo: editingButton.bottomAnchor, constant: 15),
+            nextSetsButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            nextSetsButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            nextSetsButton.heightAnchor.constraint(equalToConstant: 45),
+        ])
+        
     }
     
 }

@@ -48,7 +48,7 @@ class CalendarView: UIView {
     private func weekArray() -> [[String]] {
         
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_GB")  // получаем на английском языке (дни недели)
+        dateFormatter.locale = Locale(identifier: "en_GB")  // получаем на английском языке (дни недели) можно на рус ru_RU
         dateFormatter.dateFormat = "EEEEEE"                 // получаем дни недели всего 2 буквы (  dateFormat почитать )
         
         var weekArray : [[String]] = [[],[]]    // [[дни недели],[числы дней недели]]

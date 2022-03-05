@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class NewWorkoutViewController: UIViewController {
 
@@ -84,7 +85,12 @@ class NewWorkoutViewController: UIViewController {
         button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         return button
     }()
+    
+    private let localRealm = try! Realm()
+    private var workoutModel = WorkoutModel()
 
+    private let testImage = UIImage(named: "workoutTestImage")
+    
     override func viewDidLayoutSubviews() {
         closeButton.layer.cornerRadius = closeButton.frame.height / 2
     }
@@ -145,7 +151,8 @@ class NewWorkoutViewController: UIViewController {
     @objc private func swipeHideKeyboard() {
         view.endEditing(true)
     }
-}
+    
+ }
 extension NewWorkoutViewController: UITextFieldDelegate {
         func textFieldShouldReturn(_ textField: UITextField) -> Bool {          //когда зашли на вторую страницу в UITextField при нажатии на кнопку DONE клава проподает
             nameTextField.resignFirstResponder()

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class MainViewController: UIViewController {
     
@@ -17,6 +18,7 @@ class MainViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+    
     private let userNamelabel: UILabel = {
         let label = UILabel()
         label.text = "User Name"
@@ -67,7 +69,7 @@ class MainViewController: UIViewController {
         tableView.bounces = false                                           // выключаем верхнюю оттяжку с ячейки
         tableView.showsVerticalScrollIndicator = false                      //убираем полосу прокрутки (с правой стороны котоорая)
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.isHidden = true                                                                                //Скрывает таблицу (ВКЛ - ВЫКЛ)
+        tableView.isHidden = false                                                                                //Скрывает таблицу (ВКЛ - ВЫКЛ)
         return tableView
     }()
     
@@ -76,15 +78,19 @@ class MainViewController: UIViewController {
         imageView.image = UIImage(named: "noWorkout")
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.isHidden = false                                                                             //Скрывает заставку (картинка (ВКЛ - ВЫКЛ))
+        imageView.isHidden = true                                                                             //Скрывает заставку (картинка (ВКЛ - ВЫКЛ))
         return imageView
     }()
     
-//MARK: - MainVC
+    //MARK: - MainVC
     private let calendarView = CalendarView()
     private let weatherInfo = WeatherView()
     
     private let idWorkoutTableViewCell = "idWorkoutTableViewCell"
+    
+    
+    private let localRealm = try! Realm()                              //создаем экз Realm
+    private var workoutArray: [WorkoutModel] = []             // выводим модель(workoutModel) результат в массиве
     
     override func viewDidLayoutSubviews() {
         userPhotoImegeView.layer.cornerRadius = userPhotoImegeView.frame.width / 2                      // автоматом делиться для создания круга из квадрата
@@ -96,7 +102,9 @@ class MainViewController: UIViewController {
         setupView()
         setConstrains()
         setDelegate()
+        getWorkouts(date: Date()) //вызываем метод (текущая дата)
         tableView.register(WorkoutTableViewCell.self, forCellReuseIdentifier: idWorkoutTableViewCell)    // зарегали таблицу с ячейками (переписываем WorkoutTableViewCell вместо UITableViewCell т.к. мы создали (WorkoutTableViewCell))
+        
     }
     
     private func setDelegate() {
@@ -120,24 +128,45 @@ class MainViewController: UIViewController {
     
     @objc private func addWorkoutButtonTapped() {
         let newWorkoutViewController = NewWorkoutViewController()
-//        newWorkoutViewController.modalPresentationStyle = .fullScreen                       // открываеться полноценное окно по нажатию кнопки
+        //        newWorkoutViewController.modalPresentationStyle = .fullScreen                       // открываеться полноценное окно по нажатию кнопки
         newWorkoutViewController.modalTransitionStyle = .crossDissolve                         // разные стили открытия страници))))
         present(newWorkoutViewController, animated: true, completion: nil)                      // переходим на следующую страницу
-        
+    }
+    
+    private func getWorkouts(date: Date) {                  //создаем для календаря( при нажатии на дату планируем занятие)
+        let calendar = Calendar.current                     // обращаемся  к каледарю
+        let component = calendar.dateComponents([.weekday], from: date)         // создаем компоненты (номер дня)
+        guard let weekday = component.weekday else { return }     // проверяем день недели, получили
+
+        let dateStar = date             // для выбора дня от начала и до конца дня с нуля часов
+        let dateEnd: Date = {
+            let components = DateComponents(day: 1, second: -1) //за целый день и минус 1 секунда для (23:59:59)
+            return Calendar.current.date(byAdding: component, to: dateStar) ?? Date()
+        }()
+        //ПРЕДИКАТЫ - это условие (мы делаем запрос в нашу базу данных и фильтруем)
+        let predicatRepeat = NSPredicate(format: "workoutNumberOfDay = \(weekday) AND workoutRepeat = true") // для повторения занятий( если weekday и повтор true)
+        let predicatUnrepeat = NSPredicate(format: "workoutRepeat = false AND workoutDate BETWEEN %@", [dateStar, dateEnd])
+        let compound = NSCompoundPredicate(type: .or, subpredicates: [predicatRepeat, predicatUnrepeat])  // обьединяем предикаты | or (или 1 или 2 предикат)
+
+        workoutArray = Array(localRealm.objects(WorkoutModel.self).filter(compound).sorted(byKeyPath: "workoutName"))//(sorted(byKeyPath: "workoutName")сортируем по имени занятий
+        tableView.reloadData()      //когда меняем дату мы перезагружаем таблицу
     }
 }
 //MARK: - UITableViewDataSource
 
 extension MainViewController: UITableViewDataSource {
-
-func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    10
-}
-
-func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: idWorkoutTableViewCell, for: indexPath) as! WorkoutTableViewCell //создали ячейку и дописываем (as! WorkoutTableViewCell)
-    return cell
-  }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {           //таблица с ячейками
+        workoutArray.count  // сколько будет занятий столько и ячеик будет
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: idWorkoutTableViewCell, for: indexPath) as! WorkoutTableViewCell //создали ячейку и дописываем (as! WorkoutTableViewCell)
+//        ВОПРОС let model и cell зачем
+        let model = workoutArray[indexPath.row] 
+        cell.cellConfigure(model: model)
+        return cell
+    }
 }
 
 //MARK: - UITableViewDelegate
